@@ -32,16 +32,11 @@ def home(request):
 
     products = Product.objects.all()
 
-    # return render(request, 'basic/index.html', {'products': products, 
-    #                                             "prev_purchases": prev_purchases,
-    #                                             "bought_all": bought_all,
-    #                                             "next_allow_product": next_allow_product,
-    #                                             "payment_status": payment_status})
-    return render(request, 'basic/index_new.html', {'products': products, 
-                                                    "prev_purchases": prev_purchases,
-                                                    "bought_all": bought_all,
-                                                    "next_allow_product": next_allow_product,
-                                                    "payment_status": payment_status})
+    return render(request, 'basic/index.html', {'products': products, 
+                                                "prev_purchases": prev_purchases,
+                                                "bought_all": bought_all,
+                                                "next_allow_product": next_allow_product,
+                                                "payment_status": payment_status})
 
 
 def register_request(request):
@@ -56,18 +51,10 @@ def register_request(request):
         messages.error(request, "Unsuccessful registration. Invalid information.")
         # need to send error msg to the front end 
                 
-    form = NewUserForm()
-    return render(request=request, template_name="basic/register.html", context={"register_form": form})
-
-
-def about_us_view(request):
-    about_content = "We are a dedicated team of healthcare professionals..."
-    return render(request, 'basic/about_us.html', {'about_content': about_content})
+    return redirect("basic:home")
 
 
 def login_request(request):
-    print("Login user ====================================")
-    print(request.POST)
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -76,15 +63,16 @@ def login_request(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.info(request, f"You are now logged in as {username}.")
+                messages.info(request, f"Hello! welcome back {username}.")
                 return redirect("basic:home")
             else:
+                print("Invalid user name or password ")
                 messages.error(request,"Invalid username or password.")
-    else:
-        messages.error(request,"Invalid username or password.")
-    form = AuthenticationForm()
-    return render(request=request, template_name="basic/login.html", context={"login_form":form})
-
+        else:
+            print("invalid user name or password")
+            messages.error(request,"Invalid username or password!!!!.")
+        
+    return redirect("basic:home")
 
 
 def buy_product_view(request, product_id):
@@ -101,8 +89,8 @@ def buy_product_view(request, product_id):
     # if single product
     elif product_id != 0:
         selected_product = Product.objects.get(pk=product_id)
-        return render(request, 'basic/buy_product_new.html', context={"product": selected_product})
+        return render(request, 'basic/buy_product.html', context={"product": selected_product})
     # if buy all
     else:
         product_price = sum([product.price for product in Product.objects.all()])
-        return render(request, 'basic/buy_product_new.html', context={"product_price": product_price})
+        return render(request, 'basic/buy_product.html', context={"product_price": product_price})
