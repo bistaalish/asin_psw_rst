@@ -1,0 +1,112 @@
+
+{% extends 'basic/base.html' %}
+{% load static %}
+
+{% block content %}
+<header class="bg-dark text-white text-center py-5" >
+
+    <div class="container mt-2">
+        {% if payment_status == 'success' %}
+            <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+                Payment is successful!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% elif payment_status == 'fail' %}
+            <div id="failure-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                Payment failed. Please try again later.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+
+    <div class="container">
+        <h1 class="display-4">Welcome to Our Product</h1>
+        <p class="lead">Discover the amazing features and benefits of our product.</p>
+        <div class="mt-4">
+        {% if not user.is_authenticated %}    
+            <a href="{% url 'basic:login' %}" class="btn btn-success btn-lg mr-2">Login</a>
+            <a href="{% url 'basic:register' %}" class="btn btn-danger btn-lg">Register</a>
+        
+        {% elif bought_all%}
+            <h5> <span class="badge badge-info">You already have bought all !!</span> </h5>
+
+        {% else %}
+            {% with product_id=0 %}
+            <a href="{% url 'basic:buy_product' product_id %}" class="btn btn-danger btn-lg">Buy All</a>
+
+            {% endwith %}
+        {% endif %}
+        </div>
+    </div>
+</header>
+
+
+<div class="container mt-5">
+    <div class="card-deck">
+        
+            {% for product in products %}
+            <div class="card">
+            <img class="card-img-top" src="{{ product.image.url }}" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span class="display-5">{{product.name}}</span>
+                    <span class="badge badge-warning">price: ${{product.price}}</span>
+                    </h5>
+                <p class="card-text text-ellipsis">{{ product.description}}</p>
+            </div>
+            <div class="card-footer">
+                {% if product.id in prev_purchases %}
+                <h6> <span class="badge badge-success"> product already bought </span> </h6>
+
+                {% elif user.is_authenticated %}
+                    {% if product.id == next_allow_product %}
+                        <a href="{% url 'basic:buy_product' product.id %}" class="btn btn-primary">Buy product</a>
+            
+                    {% else %}
+                        <h6> <span class="badge badge-danger"> buy previous product first or buy all </span> </h6>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <p>Please <a href="{% url 'basic:login' %}" class="btn btn-info">Login</a> to buy this product.</p>
+                    
+                {% endif %}
+            </div>
+            </div>
+            {% endfor %}
+
+    </div>
+</div>
+
+
+<script>
+    // Automatically close the success alert after 2 seconds
+    document.addEventListener("DOMContentLoaded", function () {
+        var successAlert = document.getElementById("success-alert");
+        if (successAlert) {
+            setTimeout(function () {
+                successAlert.classList.remove("show");
+            }, 2000); // Adjust the time in milliseconds (e.g., 2000ms = 2 seconds)
+        }
+    });
+
+    // Automatically close the failure alert after 5 seconds
+    document.addEventListener("DOMContentLoaded", function () {
+        var failureAlert = document.getElementById("failure-alert");
+        if (failureAlert) {
+            setTimeout(function () {
+                failureAlert.classList.remove("show");
+            }, 2000); // Adjust the time in milliseconds (e.g., 2000ms = 2 seconds)
+        }
+    });
+</script>
+
+
+
+{% endblock %}
