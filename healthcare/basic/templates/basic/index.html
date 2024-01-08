@@ -30,23 +30,31 @@
         <!-- ************************************************* -->
         <div class="container">
             <div class="row">
-                <div class="offset-xl-3 col-xl-6 offset-lg-2 col-lg-8 col-md-12 col-sm-12">
-                    <h1>We provide the best <strong>medical</strong><br>testing for <strong>autism</strong></h1>
-                    <p>We are passionate about making a positive impact on the autism community.
-                        Our team includes experienced professionals and individuals with firsthand experience, all dedicated to creating a supportive environment.</p>
+                <!-- <div class="offset-xl-3 col-xl-6 offset-lg-2 col-lg-8 col-md-12 col-md-12"> -->
+                <div class="col-xl-12">
+                    <h1><strong>Empowering Minds with Advanced Care</strong></h1>
+                        <h4>Discover Precision and Compassion in Every Assessment</h4>
+                        <p>At Interactions Psychology, we're committed to enhancing lives through comprehensive, evidence-based psychometric assessments.
+                            Leveraging cutting-edge AI and NDIS-accepted tools, our team excels in identifying a spectrum of cognitive conditions, including autism.
+                            We pride ourselves on a compassionate approach, with a team enriched by both professional expertise and personal experience.
+                        </p>
+                   
                     <!-- <a href="#features" class="main-button-slider">Discover More</a> -->
                     {% if not user.is_authenticated %}    
                         <a href="{% url 'basic:login' %}" class="main-button-slider" data-toggle="modal" data-target="#loginModal" style="border-radius: 5px; margin-right: 10px; padding: 16px 60px;">Login</a>
                         <a href="{% url 'basic:register' %}" class="main-button-slider" data-toggle="modal" data-target="#registerModal" style="border-radius: 5px; margin-right: 10px; padding: 16px 60px;">Register</a>
                     
                     {% elif bought_all%}
-                        <h5> <span class="badge badge-info">You already have bought all !!</span> </h5>
+                        <h5> <span class="badge badge-info" style="background-color: rgb(189, 155, 71);">You already have bought all products !!</span> </h5>
 
                     {% else %}
-                        {% with product_id=0 %}
-                        <a href="{% url 'basic:buy_product' product_id %}" class="main-button-slider" style="border-radius: 5px; margin-right: 10px; padding: 16px 60px;">Buy All</a>
-
-                        {% endwith %}
+                        {% if not prev_purchases %}
+                            {% with product_id=0 %}
+                            <a href="{% url 'basic:buy_product' product_id %}" data-toggle="modal" data-target="#buyProductModal" data-product-id="0" class="main-button-slider buy_product_btn" style="border-radius: 5px; margin-right: 10px; padding: 16px 60px;">Buy All</a>
+                            {% endwith %}
+                        {% else %}
+                            <a href="{% url 'payment_support:create_allpayment' %}" class="main-button-slider buy_product_btn" style="border-radius: 5px; margin-right: 10px; padding: 16px 60px;">Buy All</a>
+                        {% endif %}
                     {% endif %}
 
                 </div>
@@ -61,6 +69,8 @@
 
 {% include 'basic/login.html' %}
 {% include 'basic/register.html' %}
+{% include 'basic/buy_product.html' %}
+
 
 <!-- ************************************************ -->
 
@@ -121,8 +131,11 @@
                         
                         {% elif user.is_authenticated %}
                             {% if product.id == next_allow_product %}
-                               <a href="{% url 'basic:buy_product' product.id %}" class="main-button-slider">Buy product</a>
-                    
+                                {% if not prev_purchases %}
+                                   <a href="{% url 'basic:buy_product' product.id %}" data-toggle="modal" data-target="#buyProductModal" data-product-id="{{ product.id }}" class="main-button-slider buy_product_btn">Buy product</a>
+                                {% else %}
+                                    <a href="{% url 'payment_support:create_payment' product.id %}" class="main-button-slider buy_product_btn">Buy product</a>
+                                {% endif %}
                             {% else %}
                                 <h6> <span style="color: #2d3030;"> buy previous product first or buy all </span> </h6>
                             {% endif %}
@@ -148,19 +161,81 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="center-heading">
-                        <h2 class="section-title">How it works?</h2>
+                        <h2 class="section-title">How Our Assessment Process Works:</h2>
+                    </div>
+                </div>
+                
+                <div class="col-lg-12">
+                    <div class="center-text step">
+                        <h4>1. Client Log In </h4>
+                        <p>Access your account securely and conveniently.</p>
+                    </div>
+                </div>
+
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4>2. Choose Assessment:</h4>
+                        <p>Select from a wide range of assessments tailored to your needs.</p>
+                    </div>
+                </div>
+
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4>3. Clinician Calls you 15min Free Consultation </h4>
+                        <p>Discuss your needs and specifics with a dedicated clinician.</p>
+                    </div>
+                </div>
+
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4> 4. Clinician Send Screeners Links</h4>
+                        <p>Receive a curated set of screening tools like WHODAS 2.0 or RAADS-R.</p>
+                    </div>
+                </div>
+
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4> 5. Clinician Reviews Automated Results</h4> 
+                        <p> Our clinicians review automated results for accuracy and insights.</p>
                     </div>
                 </div>
                 <div class="offset-lg-3 col-lg-6">
-                    <div class="center-text">
-                        <p>Donec tempus, sem non rutrum imperdiet, lectus orci fringilla nulla, at accumsan elit eros a turpis. Ut sagittis lectus libero.</p>
+                    <div class="center-text step">
+                        <h4>6. Clinician Email you a Recommendation</h4> 
+                        <p> Get professional recommendations based on preliminary findings.</p>
+                    </div>  
+                </div>
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4>7. Clinician Conducts Interviews</h4>
+                        <p>Engage in comprehensive clinical and developmental interviews</p>
                     </div>
                 </div>
+
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4>8. Client Undergo Diagnostics</h4>
+                        <p> Complete advanced diagnostic tools for a definitive understanding and diagnostic process as per The Diagnostic and Statistical Manual of Mental Disorders DSM-5.</p>
+                       
+                    </div>
+                </div>
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4>9. Discuss Results</h4>
+                        <p>Have a detailed discussion about the findings and what they mean for you.</p>
+                    </div>
+                </div>
+                <div class="offset-lg-3 col-lg-6">
+                    <div class="center-text step">
+                        <h4>Finalise Report and Tailored Recommendations</h4>
+                        <p> Receive a thorough, insightful report detailing the results, recommendations for services and support, and where to from here.</p>
+                    </div>
+                </div>
+
             </div>
             <!-- ***** Section Title End ***** -->
         </div>
-    </section>
-
+    </section> 
 
     <!-- ****************************************** about us ************************************************ -->
 
@@ -251,31 +326,5 @@
     </section>
 
 
-<!-- for buy_product form -->
-
-<script>
-
-    // handling alert message 
-    // Automatically close the success alert after 2 seconds
-    document.addEventListener("DOMContentLoaded", function () {
-        var successAlert = document.getElementById("success-alert");
-        if (successAlert) {
-            setTimeout(function () {
-                successAlert.classList.remove("show");
-            }, 4000); // Adjust the time in milliseconds (e.g., 2000ms = 2 seconds)
-        }
-    });
-
-    // Automatically close the failure alert after 5 seconds
-    document.addEventListener("DOMContentLoaded", function () {
-        var failureAlert = document.getElementById("failure-alert");
-        if (failureAlert) {
-            setTimeout(function () {
-                failureAlert.classList.remove("show");
-            }, 4000); // Adjust the time in milliseconds (e.g., 2000ms = 2 seconds)
-        }
-    });
-
-</script>
 
 {% endblock %}

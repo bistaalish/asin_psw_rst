@@ -1,55 +1,99 @@
-{% extends 'basic/base.html' %}
+<div class="modal fade" id="buyProductModal" tabindex="-1" role="dialog" aria-labelledby="buyProductModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="buyProductModal">Buy product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        
+            <form method="POST" class="mt-4" id="payment_KYC">
 
-{% block content %}
-
-<div class="container mt-5 col-md-3">
-  <h2>Buyer Information Form</h2>
-  {% if product %}
-    <form action="{% url 'payment_support:create_payment' product.id %}" method="POST" class="mt-4">
-    <input type="hidden" name="product_id" value="{{ product.id }}">
-
-  {% else %}
-    <form action="{% url 'payment_support:create_allpayment' %}" method="POST" class="mt-4">
-    <!-- <input type="hidden" name="product_id" value="0"> -->
-  {% endif%}
-
-    {% csrf_token %}
-      <div class="form-group">
-          <label for="firstName">Buyer's Name:</label>
-          <input type="text" class="form-control" id="firstName" name="buyer_name" required>
+            {% csrf_token %}
+                <div class="form-group">
+                <label for="firstName">Buyer's Name:</label>
+                <input type="text" class="form-control" id="firstName" name="buyer_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group text-center mt-4">
+                        <label for="product_price">Price: <span id="price"></span> </label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="termsAndConditions" name="termsAndConditions" required>
+                        <label class="form-check-label" for="termsAndConditions">I agree to the terms and conditions</label>
+                    </div>
+                    <button type="submit" id="submitButton" class="btn btn-primary mt-3" disabled>Buy Now</button>
+            </form>
+        </div>
       </div>
-      <div class="form-group">
-          <label for="email">Email Address:</label>
-          <input type="email" class="form-control" id="email" name="email" required>
-      </div>
-      <div class="form-group text-center mt-4">
-        <label for="product_price">Price:</label>
-        {% if product %}
-        <span id="product_price">${{ product.price }}</span>
-        {% else %}
-        <span id="product_price">${{ product_price }}</span>
-        {% endif %}
-      </div>
-      <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="termsAndConditions" name="termsAndConditions" required>
-          <label class="form-check-label" for="termsAndConditions">I agree to the terms and conditions</label>
-      </div>
-      <button type="submit" id="submitButton" class="btn btn-primary mt-3" disabled>Buy Now</button>
-  </form>
-</div>
+    </div>
+  </div>
 
-<script>
-  // Add an event listener to the checkbox
-  document.getElementById("termsAndConditions").addEventListener("change", function () {
-      // Get the submit button
-      var submitButton = document.getElementById("submitButton");
+  <script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all elements with the class 'buy_product_btn'
+        var productButtons = document.querySelectorAll('.buy_product_btn');
 
-      // Enable or disable the submit button based on the checkbox state
-      if (this.checked) {
-          submitButton.removeAttribute("disabled");
-      } else {
-          submitButton.setAttribute("disabled", "disabled");
-      }
-  });
-</script>
-{% endblock %}
+        // Get the form element
+        var paymentForm = document.getElementById('payment_KYC');
+
+        // Add a click event listener to each product button
+        productButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Get the product ID from the button's data attribute
+                var productId = this.getAttribute('data-product-id');
+                var newActionURL = ""
+                // Construct the new action URL based on the product ID
+                console.log(productId)
+                if (productId == "0"){
+                    newActionURL = "{% url 'payment_support:create_allpayment' %}";
+
+                }
+                else{
+                    newActionURL = "/payment/create-payment/"+productId+"/";
+                }
+                // Update the form's action attribute
+                paymentForm.setAttribute('action', newActionURL);
+
+                // Optional: Submit the form automatically if needed
+                // paymentForm.submit();
+            });
+        });
+    });
+
+
+        
+        $('.price').each(function() {
+            var productId = $(this).data('product-id');
+            $.ajax({
+                url: '{% url "basic:get_product_price" %}',
+                data: {'product_id': productId},
+                dataType: 'json',
+                success: function(data) {
+                    $('#price' + productId).text(data.price);
+                }
+            });
+        });
+
+
+
+    // Add an event listener to the checkbox
+    document.getElementById("termsAndConditions").addEventListener("change", function () {
+        // Get the submit button
+        var submitButton = document.getElementById("submitButton");
+  
+        // Enable or disable the submit button based on the checkbox state
+        if (this.checked) {
+            submitButton.removeAttribute("disabled");
+        } else {
+            submitButton.setAttribute("disabled", "disabled");
+        }
+    });
+  </script>
+

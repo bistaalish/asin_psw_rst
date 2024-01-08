@@ -4,6 +4,7 @@ from django.conf import settings
 from .models import Product, Purchase, Order
 from .forms import ProductForm
 from .helpers import get_object_or_none, prepare_payment_data
+from django.contrib import messages
 
 
 paypalrestsdk.configure({
@@ -243,10 +244,12 @@ def execute_payment(request):
 
 def payment_success(request):
     request.session['payment_status'] = "success"
+    messages.info(request,"payment successful")
     return redirect("basic:home")
 
 
 def payment_failed(request):
     request.session['payment_status'] = "fail"
+    messages.error(request,"payment unsuccessful")
     return redirect("basic:home")
 

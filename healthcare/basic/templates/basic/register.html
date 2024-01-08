@@ -8,30 +8,50 @@
           </button>
         </div>
         <div class="modal-body">
-            <form method="POST" action="{% url 'basic:register' %}">
+            <form method="POST" action="{% url 'basic:register' %}" onsubmit="return validateForm()">
             {% csrf_token %}
                 <div class="form-group">
-                  <label for="name">User Name</label>
+                  <label for="username">User Name</label>
                   <input type="text" class="form-control" id="username" name="username" placeholder="Enter your full name" required>
+                  <div id="usernameError" class="error-message"></div>
                 </div>
                 <div class="form-group">
                   <label for="email">Email</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                  <div id="emailError" class="error-message"></div>
                 </div>
+                
                 <div class="form-group">
                   <label for="password1">Password</label>
+                  <div class="input-group">
                   <input type="password" class="form-control" id="password1" name="password1" placeholder="Enter a password" required>
+                  <div class="input-group-append" style="margin-left: 3px;">
+                    <button class="btn btn-light" type="button" id="togglePassword1">
+                      <i class="fas fa-eye"></i>
+                  </button>
+                  </div>
                 </div>
+                <div id="passwordError" class="error-message"></div>
+                </div>
+
                 <div class="form-group">
                   <label for="password2">conform password</label>
+                  <div class="input-group">
                   <input type="password" class="form-control" id="password2" name="password2" placeholder="Conform password" required>
+                    <div class="input-group-append" style="margin-left: 3px;">
+                      <button class="btn btn-light" type="button" id="togglePassword2">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div id="confirmPasswordError" class="error-message"></div>
                 </div>
                 <div class="text-center"> <!-- Center the button within the form -->
                     <button type="submit" class="btn" style="background-color: #FBD85D; color: #000; border: none; padding: 10px 20%; width: auto;">Register</button>
                 </div>
               </form>
           <div class="text-center mt-3">
-            Already have an account? <a href="#registerModal" data-toggle="modal" data-dismiss="modal">Login</a>
+            Already have an account? <a data-target="#loginModal"  data-toggle="modal" data-dismiss="modal" style="cursor: pointer; color: #5279ec; ">Login</a>
           </div>
             <!-- <form method="POST" class="mt-4 pb-5">
                 <div class="text-center">
@@ -42,3 +62,105 @@
       </div>
     </div>
   </div>
+
+  <script>
+
+document.addEventListener('DOMContentLoaded', function () {
+            // Toggle password visibility
+            var togglePasswordButton = document.getElementById('togglePassword1');
+            togglePasswordButton.addEventListener('click', function () {
+                var passwordField = document.getElementById('password1');
+                var passwordFieldType = passwordField.getAttribute('type');
+                
+                if (passwordFieldType === 'password') {
+                    passwordField.setAttribute('type', 'text');
+                    this.querySelector('i').classList.remove('fa-eye');
+                    this.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    passwordField.setAttribute('type', 'password');
+                    this.querySelector('i').classList.remove('fa-eye-slash');
+                    this.querySelector('i').classList.add('fa-eye');
+                }
+            });
+
+
+            // toggle confirm password visibility
+            // Toggle password visibility
+            var togglePasswordButton = document.getElementById('togglePassword2');
+            togglePasswordButton.addEventListener('click', function () {
+                var passwordField = document.getElementById('password2');
+                var passwordFieldType = passwordField.getAttribute('type');
+                
+                if (passwordFieldType === 'password') {
+                    passwordField.setAttribute('type', 'text');
+                    this.querySelector('i').classList.remove('fa-eye');
+                    this.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    passwordField.setAttribute('type', 'password');
+                    this.querySelector('i').classList.remove('fa-eye-slash');
+                    this.querySelector('i').classList.add('fa-eye');
+                }
+            });
+        });
+
+  // registration form validation
+  function validateForm() {
+            console.log("validating form");
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password1").value;
+            var confirmPassword = document.getElementById("password2").value;
+
+            // Clear any previous error messages
+            clearErrorMessages();
+
+            var isValid = true;
+
+            // // Username validation
+            // if (!/^\w{3,20}$/.test(username)) {
+            //     displayError("usernameError", "⚠️ Username must be 3-20 characters, only letters, numbers, and underscores allowed.");
+            //     isValid = false;
+            // }
+
+            // Email validation
+            if (!/^\S+@\S+\.\S+$/.test(email)) {
+                displayError("emailError", "⚠️ Please enter a valid email address.");
+                isValid = false;
+            }
+
+            // Password validation
+            if (password.length < 8) {
+                displayError("passwordError", "⚠️ Password must be at least 8 characters long.");
+                isValid = false;
+            }
+
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(password)) {
+                displayError("passwordError", "⚠️ Password should contain at least one lowercase letter, one uppercase letter, one number, and one special character.");
+                isValid = false;
+            }
+
+            // Confirm Password validation
+            if (password !== confirmPassword) {
+                displayError("confirmPasswordError", "⚠️ Password and Confirm Password do not match.");
+                isValid = false;
+            }
+
+            if (isValid) {
+                modal.style.display = "none"; // Close the modal on success
+            }
+
+            return isValid;
+        }
+
+  function displayError(id, message) {
+            var errorElement = document.getElementById(id);
+            errorElement.innerText = message;
+        }
+
+  function clearErrorMessages() {
+            var errorMessages = document.getElementsByClassName("error-message");
+            for (var i = 0; i < errorMessages.length; i++) {
+                errorMessages[i].innerText = "";
+            }
+        }
+  </script>

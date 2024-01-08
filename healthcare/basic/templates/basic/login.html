@@ -26,7 +26,10 @@
           
           </form>
           <div class="text-center mt-3">
-            Don't have an account? <a href="#registerModal" data-toggle="modal" data-dismiss="modal">Register</a>
+            Don't have an account? <a data-target="#registerModal" data-toggle="modal" data-dismiss="modal" style="cursor: pointer; color:#5279ec">Register</a>
+          </div>
+          <div class="text-center mt-3">
+            Forgot your password? <a href="{% url 'reset_password' %}"  style="cursor: pointer; color:#5279ec">Reset</a>
           </div>
             <!-- <form method="POST" class="mt-4 pb-5">
                 <div class="text-center">

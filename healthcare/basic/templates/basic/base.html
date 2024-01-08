@@ -11,6 +11,10 @@
     <link rel="stylesheet" href="{%static 'assets/css/template_style.css' %}">
 
     <style>
+    
+    .error-message {
+            color: rgb(48, 88, 73);
+        }
 
     .alert-danger{
       background-color: #618264; 
@@ -23,6 +27,28 @@
       border: #EBEBEB; 
       color:white ;
       box-shadow: 0 0 5px #464645;
+    }
+
+    .step {
+      /* background-color: #ececea; */
+      padding: 10px;
+      /* border: 1px solid #d6d8db; */
+      border-radius: 8px;
+      /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+      margin-bottom: 10px;
+      /* transition: transform 0.3s ease-in-out; */
+    }
+
+    /* .step:hover {
+      transform: scale(1.01);
+    } */
+
+    .step h4 {
+      color: #a9ac0a;
+    }
+
+    .step p {
+      color: #495057;
     }
 
     </style>
@@ -108,6 +134,7 @@
 
    <!-- jQuery -->
    <script src="{%static 'assets/js/jquery-2.1.0.min.js' %}"></script>
+  
 
    <!-- Bootstrap -->
    <script src="{%static 'assets/js/popper.js' %}"></script>
@@ -122,9 +149,71 @@
    <!-- Global Init -->
    <script src="{%static 'assets/js/custom.js' %}"></script>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<!-- for buy_product form -->
+<script>
+  // Add an event listener to the checkbox
+  document.getElementById("termsAndConditions").addEventListener("change", function () {
+      // Get the submit button
+      var submitButton = document.getElementById("submitButton");
+
+      // Enable or disable the submit button based on the checkbox state
+      if (this.checked) {
+          submitButton.removeAttribute("disabled");
+      } else {
+          submitButton.setAttribute("disabled", "disabled");
+      }
+  });
+
+
+
+
+
+  $('.buy_product_btn').click(function() {
+          var productId = $(this).data('product-id');
+          $.ajax({
+                  url: '{% url "basic:get_product_price" %}',
+                  data: {'product_id': productId},
+                  dataType: 'json',
+                  success: function(data) {
+                      $('#price').text(data.price);
+              }
+      });
+  });
+
+
+  // handling alert message 
+  // Automatically close the success alert after 2 seconds
+  document.addEventListener("DOMContentLoaded", function () {
+      var successAlert = document.getElementById("success-alert");
+      if (successAlert) {
+          setTimeout(function () {
+              successAlert.classList.remove("show");
+          }, 4000); // Adjust the time in milliseconds (e.g., 2000ms = 2 seconds)
+      }
+  });
+
+  // Automatically close the failure alert after 5 seconds
+  document.addEventListener("DOMContentLoaded", function () {
+      var failureAlert = document.getElementById("failure-alert");
+      if (failureAlert) {
+          setTimeout(function () {
+              failureAlert.classList.remove("show");
+          }, 4000); // Adjust the time in milliseconds (e.g., 2000ms = 2 seconds)
+      }
+  });
+
+
+
+</script>
+
+
+
 
   </body>
 </html>

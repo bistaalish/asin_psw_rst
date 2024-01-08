@@ -3,9 +3,10 @@ from django.utils.html import format_html
 from .models import Product, Order, Purchase
 
 
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'price')
+    list_display = ("index", 'name', 'description', 'price')
 
 
 @admin.register(Order)
